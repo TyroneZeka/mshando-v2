@@ -1,0 +1,167 @@
+package com.taskrabbit.userservice.service;
+
+import com.taskrabbit.userservice.dto.UserProfileUpdateDTO;
+import com.taskrabbit.userservice.dto.UserResponseDTO;
+import com.taskrabbit.userservice.model.User;
+import com.taskrabbit.userservice.model.Profile;
+import com.taskrabbit.userservice.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * User Service for user management operations
+ * 
+ * @author Mshando Team
+ * @version 1.0.0
+ */
+@Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+
+    /**
+     * Get current user from JWT token
+     */
+    public UserResponseDTO getCurrentUser(String authHeader) {
+        String token = extractTokenFromHeader(authHeader);
+        String username = jwtService.extractUsername(token);
+        
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        return mapToUserResponseDTO(user);
+    }
+
+    /**
+     * Update user profile
+     */
+    public UserResponseDTO updateProfile(String authHeader, UserProfileUpdateDTO updateRequest) {
+        String token = extractTokenFromHeader(authHeader);
+        String username = jwtService.extractUsername(token);
+        
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Update user basic fields
+        if (updateRequest.getEmail() != null) {
+            user.setEmail(updateRequest.getEmail());
+        }
+        if (updateRequest.getFirstName() != null) {
+            user.setFirstName(updateRequest.getFirstName());
+        }
+        if (updateRequest.getLastName() != null) {
+            user.setLastName(updateRequest.getLastName());
+        }
+        if (updateRequest.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateRequest.getPhoneNumber());
+        }
+        
+        // Get or create profile
+        Profile profile = user.getProfile();
+        if (profile == null) {
+            profile = new Profile(user);
+            user.setProfile(profile);
+        }
+        
+        // Update profile fields
+        if (updateRequest.getBio() != null) {
+            profile.setBio(updateRequest.getBio());
+        }
+        if (updateRequest.getAddress() != null) {
+            profile.setAddress(updateRequest.getAddress());
+        }
+        if (updateRequest.getCity() != null) {
+            profile.setCity(updateRequest.getCity());
+        }
+        if (updateRequest.getState() != null) {
+            profile.setState(updateRequest.getState());
+        }
+        if (updateRequest.getPostalCode() != null) {
+            profile.setPostalCode(updateRequest.getPostalCode());
+        }
+        if (updateRequest.getCountry() != null) {
+            profile.setCountry(updateRequest.getCountry());
+        }
+        
+        User updatedUser = userRepository.save(user);
+        return mapToUserResponseDTO(updatedUser);
+    }
+
+    /**
+     * Get user by ID
+     */
+    @Transactional(readOnly = true)
+    public UserResponseDTO getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        return mapToUserResponseDTO(user);
+    }
+
+    /**
+     * Search users with pagination
+     */
+    @Transactional(readOnly = true)
+    public Page<UserResponseDTO> searchUsers(String query, Pageable pageable) {
+        Page<User> users;
+        
+        if (query == null || query.trim().isEmpty()) {
+            users = userRepository.findAll(pageable);
+        } else {
+            users = userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                    query, query, pageable);
+        }
+        
+        return users.map(this::mapToUserResponseDTO);
+    }
+
+    /**
+     * Delete user by ID
+     */
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found");
+        }
+        
+        userRepository.deleteById(userId);
+        log.info("User deleted successfully with ID: {}", userId);
+    }
+
+    /**
+     * Extract JWT token from Authorization header
+     */
+    private String extractTokenFromHeader(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Invalid authorization header");
+        }
+        return authHeader.substring(7);
+    }
+
+    /**
+     * Map User entity to UserResponseDTO
+     */
+    private UserResponseDTO mapToUserResponseDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhoneNumber(),
+                user.getRole().toString(),
+                user.isActive(),
+                user.isEmailVerified(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getLastLoginAt()
+        );
+    }
+}
