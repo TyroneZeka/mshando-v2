@@ -1,6 +1,21 @@
 server:
   port: 8081
 
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    filter: true
+  show-actuator: true
+  use-management-port: false
+
 spring:
   application:
     name: user-service

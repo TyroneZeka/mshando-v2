@@ -31,6 +31,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/**").permitAll()  // Allow all user endpoints for now
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()  // Allow OpenAPI docs
+                .requestMatchers("/swagger-ui/**").permitAll()  // Allow Swagger UI
+                .requestMatchers("/swagger-ui.html").permitAll()  // Allow Swagger UI HTML
+                .requestMatchers("/v3/api-docs/**").permitAll()  // Allow OpenAPI v3 docs
                 .anyRequest().authenticated()
             );
         
