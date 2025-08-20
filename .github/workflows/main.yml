@@ -1,0 +1,130 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run tests
+      run: |
+        cd mshando-microservices/user-service
+        mvn clean test
+      env:
+        DATABASE_URL: jdbc:postgresql://localhost:5432/test_db
+        DATABASE_USERNAME: test
+        DATABASE_PASSWORD: test
+
+    - name: Generate test coverage
+      run: |
+        cd mshando-microservices/user-service
+        mvn jacoco:report
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./mshando-microservices/user-service/target/site/jacoco/jacoco.xml
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Build application
+      run: |
+        cd mshando-microservices/user-service
+        mvn clean package -DskipTests
+
+    - name: Build Docker image
+      run: |
+        cd mshando-microservices/user-service
+        docker build -t mshando/user-service:${{ github.sha }} .
+
+    - name: Save Docker image
+      run: docker save mshando/user-service:${{ github.sha }} | gzip > user-service.tar.gz
+
+    - name: Upload Docker image artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: user-service-image
+        path: user-service.tar.gz
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: 'mshando-microservices/user-service'
+
+    - name: Run OWASP Dependency Check
+      run: |
+        cd mshando-microservices/user-service
+        mvn org.owasp:dependency-check-maven:check
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/develop'
+    needs: [test, build, security-scan]
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+    - name: Deploy to staging
+      run: echo "Deploying to staging environment"
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    needs: [test, build, security-scan]
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Deploy to production
+      run: echo "Deploying to production environment"

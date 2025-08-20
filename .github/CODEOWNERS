@@ -1,0 +1,36 @@
+# CODEOWNERS file for automatic review assignment
+
+# Global owners - requires approval for any change
+* @TyroneZeka
+
+# Backend microservices
+/mshando-microservices/ @TyroneZeka
+
+# User Service specific
+/mshando-microservices/user-service/ @TyroneZeka
+
+# Security-critical files require additional security review
+/mshando-microservices/**/SecurityConfig.java @TyroneZeka
+/mshando-microservices/**/JwtService.java @TyroneZeka
+/.github/workflows/ @TyroneZeka
+
+# Documentation requires documentation review
+*.md @TyroneZeka
+/docs/ @TyroneZeka
+
+# Configuration files
+/.github/ @TyroneZeka
+/.githooks/ @TyroneZeka
+/docker-compose*.yml @TyroneZeka
+/**/Dockerfile @TyroneZeka
+
+# Database migrations and schemas
+/**/src/main/resources/db/ @TyroneZeka
+/**/application*.yml @TyroneZeka
+/**/application*.properties @TyroneZeka
+
+# Build and dependency files
+/pom.xml @TyroneZeka
+/**/pom.xml @TyroneZeka
+/package.json @TyroneZeka
+/**/package.json @TyroneZeka
