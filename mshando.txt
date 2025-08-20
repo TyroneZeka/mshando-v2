@@ -1,0 +1,217 @@
+Mshando: A TaskRabbit Clone - System Design & Requirements Document
+Project Overview
+Project Name: Mshando
+Description: A microservices-based platform connecting customers who need tasks done with taskers who can complete them.
+Architecture: Spring Boot Microservices with PostgreSQL, Docker, JWT Authentication
+
+System Architecture
+High-Level Architecture Diagram
+[React Frontend] → [API Gateway (8080)] → [Eureka Server (8761)]
+├── [User Service (8081)]
+├── [Task Service (8082)]
+├── [Bidding Service (8083)]
+├── [Payment Service (8084)]
+├── [Notification Service (8085)]
+└── [Review Service (8086)]
+
+Technology Stack
+Backend: Spring Boot 3.1, Java 17
+Microservices: Spring Cloud, Eureka, Gateway
+Database: PostgreSQL with Docker
+Security: JWT + OAuth2
+Communication: REST APIs, WebSocket (future)
+Frontend: React (separate repository)
+Containerization: Docker, Docker Compose
+
+Database Design
+User Service Database (taskrabbit_users)
+-- Users table
+-- Profiles table
+Task Service Database (taskrabbit_tasks)
+-- Categories table
+-- Tasks table
+-- Task images table
+
+Security & Authentication
+JWT Token Structure
+Secret: Configurable in application.yml
+Expiration: 24 hours
+Claims: user_id, username, role, email
+
+Role-Based Access Control
+CUSTOMER: Create tasks, accept bids, review taskers
+TASKER: Browse tasks, place bids, complete tasks, get reviewed
+ADMIN: Manage users, categories, resolve disputes
+
+Microservices Breakdown
+1. Eureka Server (Port: 8761)
+- Purpose: Service discovery and registration Endpoints:
+- /eureka/apps - List all registered services
+2. API Gateway (Port: 8080)
+Purpose: Single entry point, routing, load balancing Routes:
+/api/users/** → User Service
+/api/tasks/** → Task Service
+/api/bids/** → Bidding Service
+/api/payments/** → Payment Service
+3. User Service (Port: 8081)
+Purpose: User management, authentication, profiles
+
+Endpoints:
+POST /api/auth/register # Register new user
+POST /api/auth/login # Login and get JWT token
+GET /api/users/profile # Get current user profile
+PUT /api/users/profile # Update profile
+POST /api/users/profile/picture # Upload profile picture
+POST /api/users/verify # Submit verification documents
+GET /api/users/{id} # Get user by ID
+GET /api/users/{id}/rating # Get user rating
+
+4. Task Service (Port: 8082)
+Purpose: Task creation, management, categories
+Endpoints:
+POST /api/tasks # Create new task
+GET /api/tasks # List tasks (with filters)
+GET /api/tasks/{id} # Get task by ID
+PUT /api/tasks/{id} # Update task
+DELETE /api/tasks/{id} # Delete task
+GET /api/tasks/customer/{id} # Get tasks by customer
+GET /api/tasks/tasker/{id} # Get tasks by tasker
+POST /api/tasks/{id}/images # Upload task images
+GET /api/categories # List all categories
+POST /api/categories # Create new category
+
+5. Bidding Service (Port: 8083)
+Purpose: Bid management, task assignment
+Endpoints:
+POST /api/bids # Place bid on task
+GET /api/bids/task/{taskId} # Get bids for task
+GET /api/bids/tasker/{taskerId} # Get bids by tasker
+PUT /api/bids/{id}/accept # Accept bid (customer)
+PUT /api/bids/{id}/reject # Reject bid (customer)
+PUT /api/bids/{id}/complete # Mark task as completed (tasker)
+
+6. Payment Service (Port: 8084)
+Purpose: Payment processing, escrow system
+Endpoints:
+POST /api/payments # Initiate payment
+GET /api/payments/task/{taskId} # Get payment for task
+PUT /api/payments/{id}/release # Release payment to tasker
+GET /api/wallet # Get user wallet balance
+
+7. Notification Service (Port: 8085)
+Purpose: Email/SMS notifications
+Endpoints:
+POST /api/notifications/email # Send email notification
+POST /api/notifications/sms # Send SMS notification
+
+8. Review Service (Port: 8086)
+Purpose: Rating and review system
+Endpoints:
+POST /api/reviews # Submit review
+GET /api/reviews/task/{taskId} # Get reviews for task
+GET /api/reviews/user/{userId} # Get reviews for user
+GET /api/ratings/user/{userId} # Get user rating
+
+Docker Setup
+docker-compose.yml
+version: '3.8'
+services:
+postgres:
+image: postgres:15
+environment:
+POSTGRES_DB: taskrabbit_users
+POSTGRES_USER: postgres
+
+Project Structure Guidelines
+Each Microservice Structure:
+{service-name}/
+├── src/main/java/com/taskrabbit/{service-name}/
+│ ├── Task{ServiceName}Application.java
+│ ├── config/
+│ ├── controller/
+│ ├── service/
+│ ├── repository/
+│ ├── model/
+│ ├── dto/
+│ ├── exception/
+│ └── security/
+├── src/main/resources/
+│ ├── application.yml
+│ └── application-dev.yml
+├── src/test/java/
+├── pom.xml
+└── Dockerfile
+
+Development Guidelines
+1. Git Workflow
+Main branch: Production-ready code
+Develop branch: Integration branch
+Feature branches: Individual feature development
+Pull requests: Required for merging to develop
+
+2. API Design Standards
+Use RESTful principles
+JSON request/response format
+Proper HTTP status codes
+Consistent error response format:
+{
+"timestamp": "2023-01-01T10:00:00Z",
+"status": 400,
+"error": "Bad Request",
+"message": "Validation failed",
+"path": "/api/users"
+}
+
+3. Security Best Practices
+Password hashing with BCrypt
+JWT token validation on each request
+Role-based endpoint protection
+Input validation and sanitization
+SQL injection prevention through JPA
+
+4. Logging Standards
+Use SLF4J logging
+Include correlation IDs for request tracing
+Log security events (login attempts, failed auth)
+Structured logging for monitoring
+
+Testing Requirements
+Unit Tests
+Test all service methods
+Mock external dependencies
+Aim for 80%+ code coverage
+Integration Tests
+Test API endpoints
+Database integration tests
+Security filter tests
+End-to-End Tests
+User registration and login flow
+Task creation and bidding flow
+Payment processing flow
+
+Getting Started
+Prerequisites
+Java 17
+Maven 3.8+
+Docker and Docker Compose
+PostgreSQL client
+Git
+
+Initial Setup Steps
+Run docker-compose up -d to start PostgreSQL and Eureka
+Start Eureka Server and API Gateway
+Start User Service
+Verify services are registered in Eureka dashboard (http://localhost:8761 )
+Development Workflow
+Create feature branch from develop
+Implement functionality following project structure
+Write unit and integration tests
+Run all tests locally
+Create pull request to develop branch
+Code review and merge
+
+Contact & Support
+Lead Developer: [Tyrone]
+Documentation: Swagger/OpenAPI docs at /api-docs
+Monitoring: [To be implemented]
+Version: 1.0

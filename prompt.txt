@@ -1,0 +1,181 @@
+Objective
+Implement a complete TaskRabbit clone microservices system based on the provided Mshando.docx document.
+
+Context
+You are a senior Spring Boot microservices developer tasked with building a platform that connects customers with taskers for various tasks. The system should follow microservices architecture with proper separation of concerns.
+
+Instructions
+Phase 1: Foundation Services (Priority 1)
+Create the core infrastructure services:
+1.Eureka Server Service
+Port: 8761
+Enable Eureka server functionality
+Configure to not register itself
+Include proper Maven dependencies
+2.API Gateway Service
+Port: 8080
+Configure routing to all microservices
+Enable Eureka client discovery
+Set up basic gateway configuration
+3.User Service (Most Critical)
+Port: 8081
+Implement complete user management system:
+User registration with validation
+JWT-based authentication and authorization
+Role-based access control (CUSTOMER, TASKER, ADMIN)
+Profile management with file upload capability
+User verification system
+Password encryption with BCrypt
+Database models: Users, Profiles
+Required endpoints: Register, Login, Profile CRUD, Verification
+Security: JWT token generation/validation, OAuth2 integration
+
+Phase 2: Core Business Services (Priority 2)
+Task Service
+Port: 8082
+Implement task management:
+Task creation with title, description, category, budget, location, deadline
+Category management (predefined + custom)
+Task search and filtering
+Task status management
+File upload for task images
+Geolocation integration
+Database models: Tasks, Categories, TaskImages
+Required endpoints: Task CRUD, Category CRUD, Image upload
+Bidding Service
+Port: 8083
+Implement bidding system:
+Place bids on tasks
+Accept/reject bids
+Task assignment logic
+Bid status management
+Communication system (REST-based initially)
+Database models: Bids
+Required endpoints: Bid CRUD, Accept/Reject, Task assignment
+Phase 3: Supporting Services (Priority 3)
+Payment Service
+Port: 8084
+Implement escrow payment system:
+Payment initiation
+Platform fee calculation
+Payment release logic
+Wallet management
+User verification for payments
+Database models: Payments, Wallets
+Required endpoints: Payment processing, Wallet management
+Notification Service
+Port: 8085
+Implement notification system:
+Email notifications (registration, payments, task assignments)
+SMS notifications (optional)
+Notification templates
+Required endpoints: Email/SMS sending
+Review Service
+Port: 8086
+Implement rating and review system:
+Submit reviews and ratings
+Calculate average ratings
+Review moderation
+Database models: Reviews
+Required endpoints: Review CRUD, Rating calculation
+
+Technical Requirements
+For Each Service:
+Spring Boot 3.1+ with Java 17
+Maven dependency management
+PostgreSQL database integration via Spring Data JPA
+Docker configuration files
+Proper project structure (controller, service, repository, model, dto, config)
+Exception handling with global exception handler
+Input validation using Bean Validation
+Comprehensive logging with SLF4J
+Unit and integration tests (minimum 80% coverage)
+API documentation with Swagger/OpenAPI
+Security implementation where applicable
+Database Integration:
+Use PostgreSQL with Docker
+Implement proper entity relationships
+Use JPA repositories
+Include database migration scripts (Flyway/Liquibase recommended)
+Security:
+JWT token-based authentication
+OAuth2 integration
+Role-based access control
+Password encryption
+Input sanitization
+Deliverables
+Code Structure:
+mshando-microservices/
+├── eureka-server/
+├── api-gateway/
+├── user-service/
+├── task-service/
+├── bidding-service/
+├── payment-service/
+├── notification-service/
+├── review-service/
+├── docker-compose.yml
+└── README.md
+
+For Each Microservice:
+Complete Maven project with pom.xml
+Application configuration files
+Entity models matching database design
+DTOs for API communication
+Repositories for data access
+Services with business logic
+Controllers with REST endpoints
+Security configuration
+Exception handling
+Comprehensive test suite
+Dockerfile
+API documentation
+
+Additional Requirements:
+docker-compose.yml for local development
+README.md with setup instructions
+Proper Git commit history (if version control is available)
+Consistent code style and naming conventions
+Error handling with proper HTTP status codes
+Logging for debugging and monitoring
+
+Quality Standards
+Code Quality:
+Follow SOLID principles
+Use design patterns where appropriate
+Write clean, readable, maintainable code
+Include comprehensive JavaDoc comments
+Follow Spring Boot best practices
+Testing:
+Unit tests for all service methods
+Integration tests for API endpoints
+Database integration tests
+Security tests
+Test coverage minimum 80%
+
+Performance:
+Optimize database queries
+Implement proper caching where needed
+Handle concurrent access
+Implement pagination for large datasets
+
+Success Criteria
+The implementation will be considered complete when:
+All 8 microservices are implemented and functional
+Services can communicate with each other through API Gateway
+All required endpoints are implemented per SRS
+Database schema matches the specification
+Security is properly implemented
+Tests pass with minimum coverage
+Docker configuration works for local development
+Code follows best practices and quality standards
+
+Constraints
+Use only the technologies specified in the SRS
+Follow the database schema exactly as specified
+Maintain the port numbers as defined
+Ensure all services register with Eureka properly
+Implement all security requirements
+Do not skip any required endpoints
+
+Start with Phase 1 services and proceed sequentially. Ensure each phase is fully functional before moving to the next.
