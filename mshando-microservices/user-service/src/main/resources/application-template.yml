@@ -9,7 +9,7 @@ spring:
   
   # Database Configuration
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/taskrabbit_users}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_users}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:changeme}
     driver-class-name: org.postgresql.Driver
@@ -84,7 +84,7 @@ management:
 # Logging Configuration
 logging:
   level:
-    com.taskrabbit: ${LOG_LEVEL_APP:INFO}
+    com.mshando: ${LOG_LEVEL_APP:INFO}
     org.springframework.security: ${LOG_LEVEL_SECURITY:WARN}
     org.springframework.web: ${LOG_LEVEL_WEB:WARN}
     org.hibernate.SQL: ${LOG_LEVEL_SQL:WARN}
@@ -108,7 +108,7 @@ spring:
       on-profile: docker
   
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://postgres:5432/taskrabbit_users}
+    url: ${DATABASE_URL:jdbc:postgresql://postgres:5432/mshando_users}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:postgres123}
 
@@ -119,7 +119,7 @@ eureka:
 
 logging:
   level:
-    com.taskrabbit: INFO
+    com.mshando: INFO
     org.springframework.security: INFO
     org.hibernate.SQL: ERROR
     root: INFO
@@ -149,7 +149,7 @@ spring:
 
 logging:
   level:
-    com.taskrabbit: DEBUG
+    com.mshando: DEBUG
 
 ---
 # Production Profile
@@ -170,7 +170,7 @@ spring:
 
 logging:
   level:
-    com.taskrabbit: INFO
+    com.mshando: INFO
     org.springframework.security: WARN
     org.hibernate.SQL: ERROR
     root: WARN

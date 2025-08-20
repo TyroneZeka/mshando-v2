@@ -24,7 +24,7 @@ spring:
   
   # Database Configuration
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/taskrabbit_users}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_users}
     username: ${DATABASE_USERNAME:postgres}
     password: ${DATABASE_PASSWORD:postgres123}
     driver-class-name: org.postgresql.Driver
@@ -99,7 +99,7 @@ management:
 # Logging Configuration
 logging:
   level:
-    com.taskrabbit: DEBUG
+    com.mshando: DEBUG
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
@@ -122,7 +122,7 @@ spring:
       on-profile: docker
   
   datasource:
-    url: jdbc:postgresql://postgres:5432/taskrabbit_users
+    url: jdbc:postgresql://postgres:5432/mshando_users
     username: postgres
     password: postgres123
 
@@ -133,7 +133,7 @@ eureka:
 
 logging:
   level:
-    com.taskrabbit: INFO
+    com.mshando: INFO
     org.springframework.security: INFO
     org.hibernate.SQL: ERROR
     root: INFO
@@ -163,4 +163,4 @@ spring:
 
 logging:
   level:
-    com.taskrabbit: DEBUG
+    com.mshando: DEBUG

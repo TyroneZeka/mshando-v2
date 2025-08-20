@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.taskrabbit</groupId>
+    <groupId>com.mshando</groupId>
     <artifactId>user-service</artifactId>
     <version>1.0.0</version>
     <name>user-service</name>
-    <description>User Service for Mshando TaskRabbit Clone</description>
+    <description>User Service for Mshando Platform</description>
 
     <properties>
         <java.version>17</java.version>
