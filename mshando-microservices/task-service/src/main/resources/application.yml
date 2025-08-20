@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_tasks}
     username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:password}
+    password: ${DATABASE_PASSWORD:postgres123}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
