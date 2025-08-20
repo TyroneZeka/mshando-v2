@@ -31,6 +31,7 @@ Required endpoints: Register, Login, Profile CRUD, Verification
 Security: JWT token generation/validation, OAuth2 integration
 
 Phase 2: Core Business Services (Priority 2)
+
 Task Service
 Port: 8082
 Implement task management:
@@ -42,6 +43,7 @@ File upload for task images
 Geolocation integration
 Database models: Tasks, Categories, TaskImages
 Required endpoints: Task CRUD, Category CRUD, Image upload
+
 Bidding Service
 Port: 8083
 Implement bidding system:
@@ -52,7 +54,9 @@ Bid status management
 Communication system (REST-based initially)
 Database models: Bids
 Required endpoints: Bid CRUD, Accept/Reject, Task assignment
+
 Phase 3: Supporting Services (Priority 3)
+
 Payment Service
 Port: 8084
 Implement escrow payment system:
@@ -63,6 +67,7 @@ Wallet management
 User verification for payments
 Database models: Payments, Wallets
 Required endpoints: Payment processing, Wallet management
+
 Notification Service
 Port: 8085
 Implement notification system:
@@ -70,6 +75,7 @@ Email notifications (registration, payments, task assignments)
 SMS notifications (optional)
 Notification templates
 Required endpoints: Email/SMS sending
+
 Review Service
 Port: 8086
 Implement rating and review system:
@@ -81,9 +87,10 @@ Required endpoints: Review CRUD, Rating calculation
 
 Technical Requirements
 For Each Service:
-Spring Boot 3.1+ with Java 17
+Spring Boot 3.1+ with Java 21
 Maven dependency management
 PostgreSQL database integration via Spring Data JPA
+version control with git and appropriate branching
 Docker configuration files
 Proper project structure (controller, service, repository, model, dto, config)
 Exception handling with global exception handler
@@ -92,6 +99,7 @@ Comprehensive logging with SLF4J
 Unit and integration tests (minimum 80% coverage)
 API documentation with Swagger/OpenAPI
 Security implementation where applicable
+
 Database Integration:
 Use PostgreSQL with Docker
 Implement proper entity relationships

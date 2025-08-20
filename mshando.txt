@@ -1,4 +1,4 @@
-Mshando: A TaskRabbit Clone - System Design & Requirements Document
+Mshando: System Design & Requirements Document
 Project Overview
 Project Name: Mshando
 Description: A microservices-based platform connecting customers who need tasks done with taskers who can complete them.
@@ -24,10 +24,10 @@ Frontend: React (separate repository)
 Containerization: Docker, Docker Compose
 
 Database Design
-User Service Database (taskrabbit_users)
+User Service Database (mshando_users)
 -- Users table
 -- Profiles table
-Task Service Database (taskrabbit_tasks)
+Task Service Database (mshando_tasks)
 -- Categories table
 -- Tasks table
 -- Task images table
@@ -119,13 +119,13 @@ services:
 postgres:
 image: postgres:15
 environment:
-POSTGRES_DB: taskrabbit_users
+POSTGRES_DB: mashando_users
 POSTGRES_USER: postgres
 
 Project Structure Guidelines
 Each Microservice Structure:
 {service-name}/
-├── src/main/java/com/taskrabbit/{service-name}/
+├── src/main/java/com/mshando/{service-name}/
 │ ├── Task{ServiceName}Application.java
 │ ├── config/
 │ ├── controller/
@@ -191,7 +191,7 @@ Payment processing flow
 
 Getting Started
 Prerequisites
-Java 17
+Java 21
 Maven 3.8+
 Docker and Docker Compose
 PostgreSQL client
