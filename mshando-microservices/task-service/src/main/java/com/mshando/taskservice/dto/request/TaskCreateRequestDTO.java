@@ -1,0 +1,44 @@
+package com.mshando.taskservice.dto.request;
+
+import com.mshando.taskservice.model.enums.TaskPriority;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * Task creation request DTO
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TaskCreateRequestDTO {
+    
+    @NotBlank(message = "Task title is required")
+    @Size(max = 200, message = "Title must not exceed 200 characters")
+    private String title;
+    
+    @NotBlank(message = "Task description is required")
+    @Size(max = 2000, message = "Description must not exceed 2000 characters")
+    private String description;
+    
+    @NotNull(message = "Category ID is required")
+    private Long categoryId;
+    
+    private TaskPriority priority;
+    
+    @DecimalMin(value = "0.0", inclusive = false, message = "Budget must be greater than 0")
+    private BigDecimal budget;
+    
+    @Size(max = 500, message = "Location must not exceed 500 characters")
+    private String location;
+    
+    private LocalDateTime dueDate;
+    
+    private Boolean isRemote;
+}
