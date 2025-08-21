@@ -7,7 +7,6 @@ import com.mshando.paymentservice.service.ExternalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
@@ -24,8 +23,6 @@ import java.math.BigDecimal;
 @Slf4j
 public class ExternalServiceImpl implements ExternalService {
     
-    private final RestTemplate restTemplate;
-    
     @Value("${external.user-service.url:http://user-service}")
     private String userServiceUrl;
     
@@ -34,10 +31,6 @@ public class ExternalServiceImpl implements ExternalService {
     
     @Value("${external.notification-service.url:http://notification-service}")
     private String notificationServiceUrl;
-    
-    public ExternalServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
     
     @Override
     public CustomerInfoDTO getCustomerInfo(Long customerId) {

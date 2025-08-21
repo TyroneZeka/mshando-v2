@@ -3,7 +3,6 @@ package com.mshando.paymentservice.repository;
 import com.mshando.paymentservice.BaseIntegrationTest;
 import com.mshando.paymentservice.TestDataFactory;
 import com.mshando.paymentservice.model.Payment;
-import com.mshando.paymentservice.model.PaymentMethod;
 import com.mshando.paymentservice.model.PaymentStatus;
 import com.mshando.paymentservice.model.PaymentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,16 +39,12 @@ class PaymentRepositoryTest extends BaseIntegrationTest {
     private PaymentRepository paymentRepository;
     
     private Payment testPayment;
-    private Payment completedPayment;
-    private Payment failedPayment;
     
     @BeforeEach
     void setUp() {
         paymentRepository.deleteAll();
         
         testPayment = TestDataFactory.createPayment();
-        completedPayment = TestDataFactory.createPaymentWithStatus(PaymentStatus.COMPLETED);
-        failedPayment = TestDataFactory.createPaymentWithStatus(PaymentStatus.FAILED);
     }
     
     @Test
@@ -70,7 +65,7 @@ class PaymentRepositoryTest extends BaseIntegrationTest {
         
         Optional<Payment> retrievedPayment = paymentRepository.findById(savedPayment.getId());
         assertThat(retrievedPayment).isPresent();
-        assertThat(retrievedPayment.get().getAmount()).isEqualTo(payment.getAmount());
+        assertThat(retrievedPayment.get().getAmount()).isEqualByComparingTo(payment.getAmount());
         assertThat(retrievedPayment.get().getStatus()).isEqualTo(PaymentStatus.PENDING);
     }
     

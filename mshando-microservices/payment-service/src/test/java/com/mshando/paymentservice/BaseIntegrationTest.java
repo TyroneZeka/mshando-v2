@@ -29,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class BaseIntegrationTest {
     
     @Container
+    @SuppressWarnings("resource")
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
             .withDatabaseName("payment_service_test")
             .withUsername("test")
@@ -37,6 +38,7 @@ public class BaseIntegrationTest {
     
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
+        postgres.start();
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);

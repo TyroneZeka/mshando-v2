@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim-bookworm
+FROM amazoncorretto:17-alpine
 
 # Set working directory
 WORKDIR /app

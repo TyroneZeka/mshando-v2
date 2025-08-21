@@ -61,6 +61,9 @@ public class TestDataFactory {
         // Set appropriate timestamps based on status
         LocalDateTime now = LocalDateTime.now();
         switch (status) {
+            case PENDING:
+                // No additional timestamps needed for pending status
+                break;
             case PROCESSING:
                 payment.setProcessedAt(now);
                 break;
@@ -77,6 +80,25 @@ public class TestDataFactory {
                 payment.setProcessedAt(now.minusMinutes(10));
                 payment.setCompletedAt(now.minusMinutes(5));
                 payment.setRefundedAt(now);
+                break;
+            case CANCELLED:
+                payment.setFailedAt(now);
+                payment.setFailureReason("Payment cancelled");
+                break;
+            case RETRY_PENDING:
+                payment.setProcessedAt(now.minusMinutes(5));
+                payment.setFailedAt(now.minusMinutes(1));
+                payment.setRetryCount(payment.getRetryCount() + 1);
+                break;
+            case REFUND_PENDING:
+                payment.setProcessedAt(now.minusMinutes(5));
+                payment.setCompletedAt(now.minusMinutes(3));
+                break;
+            case REFUND_FAILED:
+                payment.setProcessedAt(now.minusMinutes(5));
+                payment.setCompletedAt(now.minusMinutes(3));
+                payment.setFailedAt(now);
+                payment.setFailureReason("Refund failed");
                 break;
         }
         

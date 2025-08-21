@@ -11,7 +11,6 @@ import com.mshando.paymentservice.model.PaymentType;
 import com.mshando.paymentservice.repository.PaymentRepository;
 import com.mshando.paymentservice.service.PaymentService;
 import com.mshando.paymentservice.service.PaymentProviderService;
-import com.mshando.paymentservice.service.ExternalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +44,6 @@ public class PaymentServiceImpl implements PaymentService {
     
     private final PaymentRepository paymentRepository;
     private final PaymentProviderService paymentProviderService;
-    private final ExternalService externalService;
-    
     @Value("${payment.service-fee-percentage:10.0}")
     private BigDecimal serviceFeePercentage;
     
