@@ -1,7 +1,6 @@
 package com.mshando.taskservice.dto;
 
 import com.mshando.taskservice.model.enums.TaskPriority;
-import com.mshando.taskservice.model.enums.TaskStatus;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
