@@ -1,0 +1,30 @@
+package com.mshando.paymentservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+/**
+ * Main application class for the Mshando Payment Service.
+ * 
+ * This service provides comprehensive payment processing capabilities
+ * for the Mshando marketplace platform, including payment methods,
+ * transactions, refunds, and financial reporting.
+ *
+ * @author Mshando Team
+ * @version 1.0.0
+ */
+@SpringBootApplication
+@EnableFeignClients
+@EnableCaching
+@EnableAsync
+@EnableScheduling
+public class PaymentServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentServiceApplication.class, args);
+    }
+}

@@ -1,0 +1,232 @@
+spring:
+  application:
+    name: payment-service
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mshando_payments
+    username: ${DB_USERNAME:mshando_user}
+    password: ${DB_PASSWORD:mshando_password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:validate}
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        generate_statistics: ${GENERATE_STATS:false}
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+  
+  # Security Configuration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8080/auth/realms/mshando/protocol/openid-connect/certs}
+  
+  # Cache Configuration
+  cache:
+    type: simple
+    cache-names: payments,customerPayments,taskerEarnings,serviceFees,paymentStats
+  
+  # Async Configuration
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 100
+    scheduling:
+      pool:
+        size: 5
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8083}
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# Payment Provider Configuration
+payment:
+  providers:
+    stripe:
+      secret-key: ${STRIPE_SECRET_KEY:sk_test_dummy_key}
+      public-key: ${STRIPE_PUBLIC_KEY:pk_test_dummy_key}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_dummy_secret}
+      api-version: "2023-10-16"
+      timeout: 30000
+      max-retries: 3
+  
+  # Business Rules
+  business:
+    service-fee-percentage: ${SERVICE_FEE_PERCENTAGE:10.0}
+    minimum-payment: ${MIN_PAYMENT:0.01}
+    maximum-payment: ${MAX_PAYMENT:100000.00}
+    default-currency: ${DEFAULT_CURRENCY:USD}
+    max-retry-attempts: ${MAX_RETRIES:3}
+    retry-delay-minutes: ${RETRY_DELAY:5}
+    refund-window-days: ${REFUND_WINDOW:90}
+  
+  # Processing Configuration
+  processing:
+    async-enabled: ${ASYNC_PROCESSING:true}
+    batch-size: ${BATCH_SIZE:50}
+    retry-enabled: ${RETRY_ENABLED:true}
+    webhook-enabled: ${WEBHOOK_ENABLED:true}
+
+# External Services Configuration
+external:
+  services:
+    user-service:
+      url: ${USER_SERVICE_URL:http://localhost:8081}
+      timeout: 5000
+    task-service:
+      url: ${TASK_SERVICE_URL:http://localhost:8082}
+      timeout: 5000
+    notification-service:
+      url: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
+      timeout: 5000
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.mshando.paymentservice: ${LOG_LEVEL:INFO}
+    org.springframework.security: ${SECURITY_LOG_LEVEL:WARN}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE:logs/payment-service.log}
+
+# OpenAPI Documentation Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    filter: true
+  show-actuator: true
+
+# Application Information
+app:
+  version: @project.version@
+  description: "Mshando Payment Service - Comprehensive payment processing for the Mshando platform"
+  contact:
+    name: "Mshando Development Team"
+    email: "dev@mshando.com"
+    url: "https://mshando.com/contact"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        generate_statistics: true
+
+logging:
+  level:
+    com.mshando.paymentservice: DEBUG
+    org.hibernate.SQL: DEBUG
+
+payment:
+  processing:
+    async-enabled: false
+
+---
+# Testing Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+payment:
+  providers:
+    stripe:
+      secret-key: sk_test_mock
+      public-key: pk_test_mock
+      webhook-secret: whsec_test_mock
+
+external:
+  services:
+    user-service:
+      url: http://localhost:8881
+    task-service:
+      url: http://localhost:8882
+    notification-service:
+      url: http://localhost:8884
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    com.mshando.paymentservice: INFO
+    org.hibernate.SQL: WARN
+
+payment:
+  processing:
+    async-enabled: true
