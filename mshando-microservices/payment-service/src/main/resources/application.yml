@@ -1,13 +1,16 @@
+server:
+  port: 8084
+
 spring:
   application:
     name: payment-service
-  
-  # Database Configuration
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
   datasource:
-    url: jdbc:postgresql://localhost:5432/mshando_payments
-    username: ${DB_USERNAME:mshando_user}
-    password: ${DB_PASSWORD:mshando_password}
     driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_payments}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres123}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -18,25 +21,19 @@ spring:
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: ${DDL_AUTO:validate}
-    show-sql: ${SHOW_SQL:false}
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        generate_statistics: ${GENERATE_STATS:false}
+        generate_statistics: false
         jdbc:
           batch_size: 20
         order_inserts: true
         order_updates: true
         batch_versioned_data: true
-  
-  # Security Configuration
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8080/auth/realms/mshando/protocol/openid-connect/certs}
+    open-in-view: false
   
   # Cache Configuration
   cache:
@@ -54,14 +51,47 @@ spring:
       pool:
         size: 5
 
-# Server Configuration
-server:
-  port: ${SERVER_PORT:8083}
-  servlet:
-    context-path: /
-  compression:
-    enabled: true
-    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# Logging Configuration
+logging:
+  level:
+    com.mshando.paymentservice: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:mySecretKey}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# Inter-service communication
+services:
+  user-service:
+    url: ${USER_SERVICE_URL:http://localhost:8081}
+  task-service:
+    url: ${TASK_SERVICE_URL:http://localhost:8082}
+  notification-service:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
 
 # Payment Provider Configuration
 payment:
@@ -91,46 +121,6 @@ payment:
     retry-enabled: ${RETRY_ENABLED:true}
     webhook-enabled: ${WEBHOOK_ENABLED:true}
 
-# External Services Configuration
-external:
-  services:
-    user-service:
-      url: ${USER_SERVICE_URL:http://localhost:8081}
-      timeout: 5000
-    task-service:
-      url: ${TASK_SERVICE_URL:http://localhost:8082}
-      timeout: 5000
-    notification-service:
-      url: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
-      timeout: 5000
-
-# Actuator Configuration
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: when_authorized
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-
-# Logging Configuration
-logging:
-  level:
-    com.mshando.paymentservice: ${LOG_LEVEL:INFO}
-    org.springframework.security: ${SECURITY_LOG_LEVEL:WARN}
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BIND_LOG_LEVEL:WARN}
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ${LOG_FILE:logs/payment-service.log}
-
 # OpenAPI Documentation Configuration
 springdoc:
   api-docs:
@@ -143,56 +133,41 @@ springdoc:
     filter: true
   show-actuator: true
 
-# Application Information
-app:
-  version: @project.version@
-  description: "Mshando Payment Service - Comprehensive payment processing for the Mshando platform"
-  contact:
-    name: "Mshando Development Team"
-    email: "dev@mshando.com"
-    url: "https://mshando.com/contact"
-
 ---
-# Development Profile
+# Local Development Profile
 spring:
   config:
     activate:
-      on-profile: dev
-  
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mshando_payments
   jpa:
-    hibernate:
-      ddl-auto: create-drop
     show-sql: true
-    properties:
-      hibernate:
-        generate_statistics: true
+    hibernate:
+      ddl-auto: update
 
 logging:
   level:
     com.mshando.paymentservice: DEBUG
-    org.hibernate.SQL: DEBUG
-
-payment:
-  processing:
-    async-enabled: false
 
 ---
-# Testing Profile
+# Test Profile
 spring:
   config:
     activate:
       on-profile: test
-  
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password: password
-  
   jpa:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
 
 payment:
   providers:
@@ -201,32 +176,66 @@ payment:
       public-key: pk_test_mock
       webhook-secret: whsec_test_mock
 
-external:
-  services:
-    user-service:
-      url: http://localhost:8881
-    task-service:
-      url: http://localhost:8882
-    notification-service:
-      url: http://localhost:8884
+services:
+  user-service:
+    url: http://localhost:8881
+  task-service:
+    url: http://localhost:8882
+  notification-service:
+    url: http://localhost:8885
 
 ---
 # Production Profile
 spring:
   config:
     activate:
-      on-profile: prod
-  
+      on-profile: production
   jpa:
+    show-sql: false
     hibernate:
       ddl-auto: validate
-    show-sql: false
 
 logging:
   level:
     com.mshando.paymentservice: INFO
+    org.springframework.security: WARN
     org.hibernate.SQL: WARN
 
 payment:
   processing:
     async-enabled: true
+
+---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/mshando_payments
+    username: postgres
+    password: postgres123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: payment-service
+
+services:
+  user-service:
+    url: http://user-service:8081
+  task-service:
+    url: http://task-service:8082
+  notification-service:
+    url: http://notification-service:8085
+
+logging:
+  level:
+    com.mshando.paymentservice: INFO

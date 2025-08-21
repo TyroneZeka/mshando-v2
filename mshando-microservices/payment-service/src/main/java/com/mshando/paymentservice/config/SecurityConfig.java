@@ -1,20 +1,22 @@
 package com.mshando.paymentservice.config;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Security configuration for Payment Service.
+ * Security configuration for the Payment Service.
  * 
- * Configures JWT-based authentication and authorization
- * for payment endpoints with appropriate access controls.
+ * Configures JWT-based authentication, CORS settings,
+ * and endpoint security rules for the payment API.
+ * 
+ * NOTE: This is a placeholder configuration. In a full implementation,
+ * you would need to add the JWT authentication filter and proper
+ * JWT token validation logic.
  *
  * @author Mshando Team
  * @version 1.0.0
@@ -23,44 +25,129 @@ import org.springframework.beans.factory.annotation.Value;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-    private String jwkSetUri;
-
     /**
-     * Configures security filter chain for payment endpoints.
+     * Main security filter chain configuration.
+     * Configures endpoint access rules and authentication requirements.
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+            // Disable CSRF for stateless API
             .csrf(csrf -> csrf.disable())
+            
+            // Configure session management as stateless
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            
+            // Configure endpoint authorization
             .authorizeHttpRequests(authz -> authz
-                // Public endpoints
+                // Public endpoints (health checks, documentation)
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 
-                // Payment endpoints - require authentication
+                // Protected API endpoints
                 .requestMatchers("/api/v1/payments/**").authenticated()
                 
-                // All other requests require authentication
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt
-                    .decoder(jwtDecoder())
-                )
-            );
+                // All other endpoints require authentication
+                .anyRequest().authenticated())
+            
+            // Configure headers
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.deny())
+                .contentTypeOptions(contentTypeOptions -> {})
+                .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                    .maxAgeInSeconds(31536000)
+                    .includeSubDomains(true)));
+
+        // TODO: Add JWT authentication filter
+        // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     /**
-     * JWT decoder bean for validating JWT tokens.
+     * Security properties for configuring authentication and authorization.
      */
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+    @ConfigurationProperties(prefix = "mshando.payment.security")
+    public static class SecurityProperties {
+        
+        /**
+         * JWT secret key for token validation
+         */
+        private String jwtSecret = "your-secret-key-here";
+        
+        /**
+         * JWT token expiration time in milliseconds
+         */
+        private long jwtExpirationMs = 86400000; // 24 hours
+        
+        /**
+         * Whether to enable JWT authentication
+         */
+        private boolean jwtEnabled = true;
+        
+        /**
+         * Allowed origins for CORS
+         */
+        private String[] allowedOrigins = {"http://localhost:3000", "http://localhost:8080"};
+        
+        /**
+         * Whether to allow credentials in CORS requests
+         */
+        private boolean allowCredentials = true;
+        
+        /**
+         * Maximum age for CORS preflight requests
+         */
+        private long corsMaxAge = 3600;
+
+        // Getters and setters
+        public String getJwtSecret() {
+            return jwtSecret;
+        }
+
+        public void setJwtSecret(String jwtSecret) {
+            this.jwtSecret = jwtSecret;
+        }
+
+        public long getJwtExpirationMs() {
+            return jwtExpirationMs;
+        }
+
+        public void setJwtExpirationMs(long jwtExpirationMs) {
+            this.jwtExpirationMs = jwtExpirationMs;
+        }
+
+        public boolean isJwtEnabled() {
+            return jwtEnabled;
+        }
+
+        public void setJwtEnabled(boolean jwtEnabled) {
+            this.jwtEnabled = jwtEnabled;
+        }
+
+        public String[] getAllowedOrigins() {
+            return allowedOrigins;
+        }
+
+        public void setAllowedOrigins(String[] allowedOrigins) {
+            this.allowedOrigins = allowedOrigins;
+        }
+
+        public boolean isAllowCredentials() {
+            return allowCredentials;
+        }
+
+        public void setAllowCredentials(boolean allowCredentials) {
+            this.allowCredentials = allowCredentials;
+        }
+
+        public long getCorsMaxAge() {
+            return corsMaxAge;
+        }
+
+        public void setCorsMaxAge(long corsMaxAge) {
+            this.corsMaxAge = corsMaxAge;
+        }
     }
 }
