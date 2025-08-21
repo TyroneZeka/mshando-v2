@@ -1,5 +1,7 @@
 package com.mshando.biddingservice.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Enumeration representing the various states of a bid in the bidding system.
  * 
@@ -10,34 +12,26 @@ package com.mshando.biddingservice.model;
  * @author Mshando Team
  * @version 1.0.0
  */
+@Schema(description = "Current status of the bid in its lifecycle", 
+        example = "PENDING",
+        allowableValues = {"PENDING", "ACCEPTED", "REJECTED", "WITHDRAWN", "COMPLETED", "CANCELLED"})
 public enum BidStatus {
-    /**
-     * Bid has been submitted and is awaiting customer's decision
-     */
+    
+    @Schema(description = "🕐 Bid has been submitted and is awaiting customer's decision")
     PENDING,
     
-    /**
-     * Bid has been accepted by the customer
-     */
+    @Schema(description = "✅ Bid has been accepted by the customer")
     ACCEPTED,
     
-    /**
-     * Bid has been rejected by the customer
-     */
+    @Schema(description = "❌ Bid has been rejected by the customer")
     REJECTED,
     
-    /**
-     * Bid has been withdrawn by the tasker
-     */
+    @Schema(description = "🔙 Bid has been withdrawn by the tasker")
     WITHDRAWN,
     
-    /**
-     * Work has been completed and verified
-     */
+    @Schema(description = "🎉 Work has been completed and verified")
     COMPLETED,
     
-    /**
-     * Accepted bid was cancelled before completion
-     */
+    @Schema(description = "⚠️ Accepted bid was cancelled before completion")
     CANCELLED
 }

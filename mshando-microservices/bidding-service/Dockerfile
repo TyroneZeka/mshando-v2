@@ -1,4 +1,3 @@
-# Use OpenJDK 17 as base image
 FROM openjdk:21-jdk-slim-bookworm
 
 # Set working directory

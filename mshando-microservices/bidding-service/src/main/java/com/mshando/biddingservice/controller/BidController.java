@@ -5,6 +5,9 @@ import com.mshando.biddingservice.model.BidStatus;
 import com.mshando.biddingservice.service.BidService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,8 +27,8 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for bid management operations.
  * 
- * Provides endpoints for creating, updating, and managing bids
- * in the Mshando marketplace platform.
+ * Provides comprehensive endpoints for creating, updating, and managing bids
+ * in the Mshando marketplace platform with full lifecycle support.
  *
  * @author Mshando Team
  * @version 1.0.0
@@ -34,22 +37,111 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/bids")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Bid Management", description = "Endpoints for managing bids on tasks")
+@Tag(name = "🎯 Bid Management", 
+     description = "Complete bid lifecycle management including creation, updates, status changes, and analytics")
 public class BidController {
 
     private final BidService bidService;
 
-    @Operation(summary = "Create a new bid", description = "Create a new bid for a task")
+    @Operation(
+        summary = "📝 Create New Bid",
+        description = """
+                **Create a new bid on a task**
+                
+                This endpoint allows taskers to place bids on available tasks. Each tasker can only place one bid per task.
+                
+                ### Business Rules:
+                - ✅ Only one bid per tasker per task
+                - 💰 Amount must be between $5.00 and $10,000.00
+                - ⏱️ Estimated time: 1-720 hours (1 hour to 30 days)
+                - 📝 Optional message up to 1000 characters
+                
+                ### Workflow:
+                1. Tasker submits bid with required details
+                2. System validates business rules
+                3. Bid is created with PENDING status
+                4. Notifications sent to task owner
+                """,
+        tags = {"Bid Creation"}
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Bid created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid bid data"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "409", description = "Bid already exists or business rule violated")
+        @ApiResponse(
+            responseCode = "201", 
+            description = "✅ Bid created successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = BidResponseDTO.class),
+                examples = @ExampleObject(
+                    name = "Successful Bid Creation",
+                    summary = "Example of successful bid creation",
+                    value = """
+                            {
+                              "id": 456,
+                              "taskId": 123,
+                              "taskerId": 789,
+                              "customerId": 101,
+                              "amount": 75.50,
+                              "message": "I have extensive experience with this type of work.",
+                              "status": "PENDING",
+                              "estimatedCompletionHours": 24,
+                              "createdAt": "2025-08-21T10:30:00",
+                              "updatedAt": "2025-08-21T10:30:00"
+                            }
+                            """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "❌ Invalid bid data or validation failed",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                examples = @ExampleObject(ref = "#/components/examples/ValidationError")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401", 
+            description = "🔒 Authentication required",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                examples = @ExampleObject(ref = "#/components/examples/Unauthorized")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "409", 
+            description = "⚠️ Business rule violation (e.g., already bid on this task)",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(ref = "#/components/schemas/ErrorResponse"),
+                examples = @ExampleObject(ref = "#/components/examples/BusinessRuleViolation")
+            )
+        )
     })
     @PostMapping
     public ResponseEntity<BidResponseDTO> createBid(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "Bid creation details",
+                required = true,
+                content = @Content(
+                    schema = @Schema(implementation = BidCreateDTO.class),
+                    examples = @ExampleObject(
+                        name = "Create Bid Example",
+                        summary = "Example bid creation request",
+                        value = """
+                                {
+                                  "taskId": 123,
+                                  "amount": 75.50,
+                                  "message": "I have extensive experience with this type of work and can complete it efficiently.",
+                                  "estimatedCompletionHours": 24
+                                }
+                                """
+                    )
+                )
+            )
             @Valid @RequestBody BidCreateDTO bidCreateDTO,
-            Authentication authentication) {
+            @Parameter(hidden = true) Authentication authentication) {
         
         log.info("Creating bid for task {} by user {}", bidCreateDTO.getTaskId(), authentication.getName());
         
@@ -59,20 +151,39 @@ public class BidController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBid);
     }
 
-    @Operation(summary = "Update an existing bid", description = "Update a pending bid's details")
+    @Operation(
+        summary = "✏️ Update Existing Bid",
+        description = """
+                **Update a pending bid's details**
+                
+                This endpoint allows taskers to modify their pending bids before they are accepted or rejected.
+                
+                ### Requirements:
+                - 🎯 Must be the bid owner
+                - ⏳ Bid must be in PENDING status
+                - 💰 New amount must meet validation rules
+                
+                ### What can be updated:
+                - Bid amount ($5.00 - $10,000.00)
+                - Message to customer
+                - Estimated completion time
+                """,
+        tags = {"Bid Management"}
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Bid updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid bid data"),
-        @ApiResponse(responseCode = "401", description = "Unauthorized"),
-        @ApiResponse(responseCode = "403", description = "Forbidden - not bid owner"),
-        @ApiResponse(responseCode = "404", description = "Bid not found"),
-        @ApiResponse(responseCode = "409", description = "Bid cannot be modified")
+        @ApiResponse(responseCode = "200", description = "✅ Bid updated successfully"),
+        @ApiResponse(responseCode = "400", description = "❌ Invalid bid data"),
+        @ApiResponse(responseCode = "401", description = "🔒 Authentication required"),
+        @ApiResponse(responseCode = "403", description = "🚫 Not bid owner"),
+        @ApiResponse(responseCode = "404", description = "❓ Bid not found"),
+        @ApiResponse(responseCode = "409", description = "⚠️ Bid cannot be modified (not pending)")
     })
     @PutMapping("/{bidId}")
     public ResponseEntity<BidResponseDTO> updateBid(
+            @Parameter(description = "Unique bid identifier", example = "456")
             @PathVariable Long bidId,
             @Valid @RequestBody BidUpdateDTO bidUpdateDTO,
-            Authentication authentication) {
+            @Parameter(hidden = true) Authentication authentication) {
         
         log.info("Updating bid {} by user {}", bidId, authentication.getName());
         
@@ -82,28 +193,54 @@ public class BidController {
         return ResponseEntity.ok(updatedBid);
     }
 
-    @Operation(summary = "Get bid by ID", description = "Retrieve a specific bid by its ID")
+    @Operation(
+        summary = "🔍 Get Bid Details",
+        description = """
+                **Retrieve detailed information about a specific bid**
+                
+                Returns complete bid information including status, timestamps, and related data.
+                """,
+        tags = {"Bid Retrieval"}
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Bid retrieved successfully"),
-        @ApiResponse(responseCode = "404", description = "Bid not found")
+        @ApiResponse(responseCode = "200", description = "✅ Bid retrieved successfully"),
+        @ApiResponse(responseCode = "404", description = "❓ Bid not found")
     })
     @GetMapping("/{bidId}")
-    public ResponseEntity<BidResponseDTO> getBidById(@PathVariable Long bidId) {
+    public ResponseEntity<BidResponseDTO> getBidById(
+            @Parameter(description = "Unique bid identifier", example = "456")
+            @PathVariable Long bidId) {
         log.debug("Fetching bid {}", bidId);
         
         BidResponseDTO bid = bidService.getBidById(bidId);
         return ResponseEntity.ok(bid);
     }
 
-    @Operation(summary = "Get bids for a task", description = "Retrieve all bids for a specific task")
+    @Operation(
+        summary = "📋 Get Task Bids",
+        description = """
+                **Retrieve all bids for a specific task**
+                
+                Returns paginated list of all bids placed on the specified task, useful for task owners to review options.
+                
+                ### Features:
+                - 📄 Paginated results
+                - 🔄 Real-time status updates
+                - 👤 Tasker information included
+                """,
+        tags = {"Bid Retrieval"}
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Bids retrieved successfully")
+        @ApiResponse(responseCode = "200", description = "✅ Task bids retrieved successfully")
     })
     @GetMapping("/task/{taskId}")
     public ResponseEntity<Page<BidResponseDTO>> getBidsByTaskId(
+            @Parameter(description = "Task identifier to get bids for", example = "123")
             @PathVariable Long taskId,
-            @Parameter(description = "Page number (0-based)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "Page number (0-based)", example = "0") 
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Number of bids per page", example = "10") 
+            @RequestParam(defaultValue = "10") int size) {
         
         log.debug("Fetching bids for task {} - page: {}, size: {}", taskId, page, size);
         
