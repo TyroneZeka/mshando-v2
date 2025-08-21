@@ -125,3 +125,36 @@ logging:
     com.mshando.biddingservice: INFO
     org.springframework.security: WARN
     org.hibernate.SQL: WARN
+
+---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/taskrabbit_bidding
+    username: postgres
+    password: postgres123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: bidding-service
+
+services:
+  user-service:
+    url: http://user-service:8081
+  task-service:
+    url: http://task-service:8082
+
+logging:
+  level:
+    com.mshando.biddingservice: INFO

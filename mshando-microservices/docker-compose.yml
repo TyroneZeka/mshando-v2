@@ -5,7 +5,7 @@ services:
     container_name: mshando-postgres
     restart: always
     environment:
-      POSTGRES_DB: taskrabbit_main
+      POSTGRES_DB: mshando_main
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
     ports:
@@ -53,7 +53,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskrabbit_users
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_users
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
     depends_on:
@@ -72,7 +72,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskrabbit_tasks
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_tasks
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
     depends_on:
@@ -91,7 +91,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskrabbit_bidding
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_bidding
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
     depends_on:
@@ -110,7 +110,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskrabbit_payments
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_payments
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
     depends_on:
@@ -144,7 +144,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskrabbit_reviews
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_reviews
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres123
     depends_on:

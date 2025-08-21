@@ -135,7 +135,7 @@ show_local_status() {
     print_status "Local Service Status:"
     echo ""
     
-    services=("eureka-server:8761" "api-gateway:8080" "user-service:8081" "task-service:8082")
+    services=("eureka-server:8761" "api-gateway:8080" "user-service:8081" "task-service:8082" "bidding-service:8083")
     
     for service_port in "${services[@]}"; do
         local service=$(echo $service_port | cut -d: -f1)
@@ -163,8 +163,9 @@ show_local_status() {
     echo "  📊 Eureka Dashboard: http://localhost:8761"
     echo "  🌐 API Gateway: http://localhost:8080"
     echo "  👤 User Service: http://localhost:8081"
-    echo "  � Task Service: http://localhost:8082"
-    echo "  �📖 API Documentation: http://localhost:8080/swagger-ui.html"
+    echo "  📋 Task Service: http://localhost:8082"
+    echo "  💰 Bidding Service: http://localhost:8083"
+    echo "  📖 API Documentation: http://localhost:8080/swagger-ui.html"
     echo "  📖 Task Service API: http://localhost:8082/swagger-ui/index.html"
 }
 
@@ -190,6 +191,9 @@ case "${1:-start}" in
         
         run_service "task-service" 8082 "task-service"
         wait_for_service "task-service" 8082
+        
+        run_service "bidding-service" 8083 "bidding-service"
+        wait_for_service "bidding-service" 8083
         
         show_local_status
         print_success "All services started successfully! 🎉"
