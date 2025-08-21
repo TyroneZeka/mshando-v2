@@ -177,7 +177,7 @@ public class BidServiceImpl implements BidService {
         }
         
         // Check if task already has accepted bid
-        if (bidRepository.findByTaskIdAndStatus(bid.getTaskId(), BidStatus.ACCEPTED).isPresent()) {
+        if (bidRepository.findFirstByTaskIdAndStatus(bid.getTaskId(), BidStatus.ACCEPTED).isPresent()) {
             throw new InvalidBidOperationException("Task already has an accepted bid");
         }
         
@@ -331,7 +331,7 @@ public class BidServiceImpl implements BidService {
     @Override
     @Transactional(readOnly = true)
     public BidResponseDTO getAcceptedBidByTaskId(Long taskId) {
-        return bidRepository.findByTaskIdAndStatus(taskId, BidStatus.ACCEPTED)
+        return bidRepository.findFirstByTaskIdAndStatus(taskId, BidStatus.ACCEPTED)
                 .map(this::convertToResponseDTO)
                 .orElse(null);
     }

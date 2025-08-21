@@ -94,7 +94,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     /**
      * Find the accepted bid for a task (should be only one)
      */
-    Optional<Bid> findByTaskIdAndStatus(Long taskId, BidStatus status);
+    Optional<Bid> findFirstByTaskIdAndStatus(Long taskId, BidStatus status);
     
     /**
      * Find pending bids older than specified date (for auto-acceptance)

@@ -32,4 +32,5 @@ public class TaskInfoDTO {
     private String status;
     private String categoryName;
     private String customerName;
+    private Long customerId;
 }

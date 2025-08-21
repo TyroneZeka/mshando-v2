@@ -94,16 +94,6 @@ public class Bid {
     @Column(name = "version")
     private Long version;
 
-    // Additional indexes for performance
-    @Table(indexes = {
-        @Index(name = "idx_bid_task_id", columnList = "task_id"),
-        @Index(name = "idx_bid_tasker_id", columnList = "tasker_id"),
-        @Index(name = "idx_bid_customer_id", columnList = "customer_id"),
-        @Index(name = "idx_bid_status", columnList = "status"),
-        @Index(name = "idx_bid_created_at", columnList = "created_at"),
-        @Index(name = "idx_bid_task_status", columnList = "task_id, status")
-    })
-    
     /**
      * Checks if the bid is in a pending state
      */
