@@ -60,15 +60,19 @@ public class UserController {
     }
 
     /**
-     * Get user by ID (admin only)
+     * Get user by ID (admin only or own profile)
      * 
      * @param userId user ID to retrieve
+     * @param authHeader JWT token from Authorization header
      * @return user details
      */
     @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long userId) {
+    public ResponseEntity<UserResponseDTO> getUserById(
+            @PathVariable Long userId,
+            @RequestHeader("Authorization") String authHeader) {
+        
         log.info("Getting user by ID: {}", userId);
-        UserResponseDTO user = userService.getUserById(userId);
+        UserResponseDTO user = userService.getUserById(userId, authHeader);
         return ResponseEntity.ok(user);
     }
 
@@ -93,12 +97,16 @@ public class UserController {
      * Delete user by ID (admin only)
      * 
      * @param userId user ID to delete
+     * @param authHeader JWT token from Authorization header
      * @return success response
      */
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long userId,
+            @RequestHeader("Authorization") String authHeader) {
+        
         log.info("Deleting user with ID: {}", userId);
-        userService.deleteUser(userId);
+        userService.deleteUser(userId, authHeader);
         return ResponseEntity.noContent().build();
     }
 }

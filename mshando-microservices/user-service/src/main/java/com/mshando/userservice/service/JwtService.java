@@ -95,6 +95,16 @@ public class JwtService {
                 .compact();
     }
 
+        /**
+     * Check if JWT token is expired
+     * 
+     * @param token JWT token
+     * @return true if expired, false otherwise
+     */
+    public boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
     /**
      * Check if JWT token is valid
      * Note: Token is valid if username matches, token is not expired, and user is active
@@ -107,16 +117,6 @@ public class JwtService {
     public boolean isTokenValid(String token, User user) {
         final String username = extractUsername(token);
         return (username.equals(user.getUsername())) && !isTokenExpired(token) && user.isActive();
-    }
-
-    /**
-     * Check if JWT token is expired
-     * 
-     * @param token JWT token
-     * @return true if expired, false otherwise
-     */
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
     }
 
     /**

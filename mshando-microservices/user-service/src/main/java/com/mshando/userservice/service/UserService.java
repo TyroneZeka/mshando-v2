@@ -2,6 +2,8 @@ package com.mshando.userservice.service;
 
 import com.mshando.userservice.dto.UserProfileUpdateDTO;
 import com.mshando.userservice.dto.UserResponseDTO;
+import com.mshando.userservice.exception.InvalidAuthorizationException;
+import com.mshando.userservice.exception.UserNotFoundException;
 import com.mshando.userservice.model.User;
 import com.mshando.userservice.model.Profile;
 import com.mshando.userservice.repository.UserRepository;
@@ -34,8 +36,8 @@ public class UserService {
         String token = extractTokenFromHeader(authHeader);
         String username = jwtService.extractUsername(token);
         
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("username", username));
         
         return mapToUserResponseDTO(user);
     }
@@ -47,8 +49,8 @@ public class UserService {
         String token = extractTokenFromHeader(authHeader);
         String username = jwtService.extractUsername(token);
         
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("username", username));
         
         // Update user basic fields
         if (updateRequest.getEmail() != null) {
@@ -96,12 +98,22 @@ public class UserService {
     }
 
     /**
-     * Get user by ID
+     * Get user by ID with authorization check
      */
     @Transactional(readOnly = true)
-    public UserResponseDTO getUserById(Long userId) {
+    public UserResponseDTO getUserById(Long userId, String authHeader) {
+        String token = extractTokenFromHeader(authHeader);
+        String currentUsername = jwtService.extractUsername(token);
+        String currentRole = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+        Long currentUserId = jwtService.extractClaim(token, claims -> claims.get("userId", Long.class));
+
+        // Check if user is admin or accessing their own profile
+        if (!"ADMIN".equals(currentRole) && !currentUserId.equals(userId)) {
+            throw new SecurityException("Access denied: You can only access your own profile");
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         
         return mapToUserResponseDTO(user);
     }
@@ -124,11 +136,19 @@ public class UserService {
     }
 
     /**
-     * Delete user by ID
+     * Delete user by ID (admin only)
      */
-    public void deleteUser(Long userId) {
+    public void deleteUser(Long userId, String authHeader) {
+        String token = extractTokenFromHeader(authHeader);
+        String currentRole = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+
+        // Only admins can delete users
+        if (!"ADMIN".equals(currentRole)) {
+            throw new SecurityException("Access denied: Only admins can delete users");
+        }
+
         if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException(userId);
         }
         
         userRepository.deleteById(userId);
@@ -140,7 +160,7 @@ public class UserService {
      */
     private String extractTokenFromHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Invalid authorization header");
+            throw new InvalidAuthorizationException();
         }
         return authHeader.substring(7);
     }
