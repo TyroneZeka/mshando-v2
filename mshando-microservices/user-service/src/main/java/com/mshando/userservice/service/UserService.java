@@ -70,7 +70,11 @@ public class UserService {
         Profile profile = user.getProfile();
         if (profile == null) {
             profile = new Profile(user);
+            profile.setCreatedAt(java.time.LocalDateTime.now());
+            profile.setUpdatedAt(java.time.LocalDateTime.now());
             user.setProfile(profile);
+        } else {
+            profile.setUpdatedAt(java.time.LocalDateTime.now());
         }
         
         // Update profile fields
@@ -103,7 +107,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long userId, String authHeader) {
         String token = extractTokenFromHeader(authHeader);
-        String currentUsername = jwtService.extractUsername(token);
         String currentRole = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
         Long currentUserId = jwtService.extractClaim(token, claims -> claims.get("userId", Long.class));
 
