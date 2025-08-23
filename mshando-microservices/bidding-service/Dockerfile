@@ -3,26 +3,18 @@ FROM amazoncorretto:17-alpine
 # Set working directory
 WORKDIR /app
 
-# Install Maven
-RUN apt-get update && \
-    apt-get install -y maven && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy pom.xml and download dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source code
-COPY src ./src
-
-# Build application
-RUN mvn clean package -DskipTests
+# Copy the JAR file
+COPY target/bidding-service-1.0.0.jar app.jar
 
 # Expose port
 EXPOSE 8083
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8083/actuator/health || exit 1
+
 # Set JVM options for container environment
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
+ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
 
 # Run the application
-CMD ["java", "-jar", "target/bidding-service-1.0.0.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

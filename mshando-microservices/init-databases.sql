@@ -1,13 +1,13 @@
 -- Initialize multiple databases for microservices
-CREATE DATABASE taskrabbit_users;
-CREATE DATABASE taskrabbit_tasks;
-CREATE DATABASE taskrabbit_bidding;
-CREATE DATABASE taskrabbit_payments;
-CREATE DATABASE taskrabbit_reviews;
+CREATE DATABASE mshando_users;
+CREATE DATABASE mshando_tasks;
+CREATE DATABASE mshando_bidding;
+CREATE DATABASE mshando_payments;
+CREATE DATABASE mshando_reviews;
 
 -- Grant privileges
-GRANT ALL PRIVILEGES ON DATABASE taskrabbit_users TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE taskrabbit_tasks TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE taskrabbit_bidding TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE taskrabbit_payments TO postgres;
-GRANT ALL PRIVILEGES ON DATABASE taskrabbit_reviews TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE mshando_users TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE mshando_tasks TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE mshando_bidding TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE mshando_payments TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE mshando_reviews TO postgres;

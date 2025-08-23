@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM amazoncorretto:17-alpine
 
 # Add application user
 RUN addgroup -g 1000 appgroup && \
@@ -7,8 +7,12 @@ RUN addgroup -g 1000 appgroup && \
 # Set working directory
 WORKDIR /app
 
+# Create upload directory
+RUN mkdir -p ./uploads/task-service && \
+    chown -R appuser:appgroup ./uploads
+
 # Copy application jar
-COPY target/payment-service-*.jar app.jar
+COPY target/task-service-1.0.0.jar app.jar
 
 # Change ownership of the app directory
 RUN chown -R appuser:appgroup /app
@@ -18,10 +22,10 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8084/actuator/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health || exit 1
 
 # Expose port
-EXPOSE 8084
+EXPOSE 8082
 
 # JVM options for containerized environment
 ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"

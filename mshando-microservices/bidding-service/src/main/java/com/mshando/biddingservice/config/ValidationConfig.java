@@ -29,8 +29,8 @@ public class ValidationConfig {
     public LocalValidatorFactoryBean validator() {
         LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
         
-        // Configure validation messages
-        factoryBean.setValidationMessageSource(null); // Use default message source
+        // Don't set message source - let Spring use defaults
+        // factoryBean.setValidationMessageSource(null); // This causes the error
         
         return factoryBean;
     }

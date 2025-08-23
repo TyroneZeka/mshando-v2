@@ -110,6 +110,33 @@ logging:
     root: INFO
 
 ---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  
+  datasource:
+    url: jdbc:postgresql://postgres:5432/mshando_tasks
+    username: postgres
+    password: postgres123
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: task-service
+
+logging:
+  level:
+    com.mshando: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: ERROR
+    root: INFO
+
+---
 # Production Profile
 spring:
   config:
