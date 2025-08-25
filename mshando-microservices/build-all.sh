@@ -126,6 +126,7 @@ build_all_services() {
         "task-service:task-service"
         "bidding-service:bidding-service"
         "payment-service:payment-service"
+        "notification-service:notification-service"
     )
     
     local failed_services=()

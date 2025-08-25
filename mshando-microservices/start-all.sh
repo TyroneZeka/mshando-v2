@@ -80,6 +80,14 @@ echo $! > ../payment.pid
 cd ..
 sleep 10
 
+# Start Notification Service
+print_info "Starting Notification Service..."
+cd notification-service
+java -jar target/notification-service-1.0.0.jar --spring.profiles.active=local > ../logs/notification.log 2>&1 &
+echo $! > ../notification.pid
+cd ..
+sleep 10
+
 print_success "All services started!"
 print_info "Access points:"
 echo "  📊 Eureka Dashboard: http://localhost:8761"
@@ -88,6 +96,7 @@ echo "  👤 User Service: http://localhost:8081"
 echo "  📋 Task Service: http://localhost:8082"
 echo "  💰 Bidding Service: http://localhost:8083"
 echo "  💳 Payment Service: http://localhost:8084"
+echo "  📧 Notification Service: http://localhost:8085"
 echo ""
 print_info "To view logs: tail -f logs/[service].log"
 print_info "To stop all services: ./stop-all.sh"

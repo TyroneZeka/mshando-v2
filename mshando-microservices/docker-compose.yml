@@ -122,19 +122,32 @@ services:
       - mshando-network
 
   # Notification Service
-#  notification-service:
-#    build: ./notification-service
-#    container_name: mshando-notification-service
-#    restart: always
-#    ports:
-#      - "8085:8085"
-#    environment:
-#      SPRING_PROFILES_ACTIVE: docker
-#      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka
-#    depends_on:
-#      - eureka-server
-#    networks:
-#      - mshando-network
+  notification-service:
+    build: ./notification-service
+    container_name: mshando-notification-service
+    restart: always
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: ${EUREKA_SERVER_URL}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mshando_notifications
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      EMAIL_ENABLED: ${EMAIL_ENABLED:-true}
+      SMS_ENABLED: ${SMS_ENABLED:-true}
+    depends_on:
+      - postgres
+      - eureka-server
+    networks:
+      - mshando-network
 
   # Review Service
 #  review-service:

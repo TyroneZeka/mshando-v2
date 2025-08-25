@@ -19,7 +19,7 @@ print_success() {
 }
 
 # Stop services
-for service in eureka gateway user task bidding payment; do
+for service in eureka gateway user task bidding payment notification; do
     if [ -f "${service}.pid" ]; then
         pid=$(cat "${service}.pid")
         if kill -0 $pid 2>/dev/null; then
