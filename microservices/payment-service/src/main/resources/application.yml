@@ -1,0 +1,241 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_payments}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres123}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        generate_statistics: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+    open-in-view: false
+  
+  # Cache Configuration
+  cache:
+    type: simple
+    cache-names: payments,customerPayments,taskerEarnings,serviceFees,paymentStats
+  
+  # Async Configuration
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 100
+    scheduling:
+      pool:
+        size: 5
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# Logging Configuration
+logging:
+  level:
+    com.mshando.paymentservice: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:mySecretKey}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# Inter-service communication
+services:
+  user-service:
+    url: ${USER_SERVICE_URL:http://localhost:8081}
+  task-service:
+    url: ${TASK_SERVICE_URL:http://localhost:8082}
+  notification-service:
+    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
+
+# Payment Provider Configuration
+payment:
+  providers:
+    stripe:
+      secret-key: ${STRIPE_SECRET_KEY:sk_test_dummy_key}
+      public-key: ${STRIPE_PUBLIC_KEY:pk_test_dummy_key}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_dummy_secret}
+      api-version: "2023-10-16"
+      timeout: 30000
+      max-retries: 3
+  
+  # Business Rules
+  business:
+    service-fee-percentage: ${SERVICE_FEE_PERCENTAGE:10.0}
+    minimum-payment: ${MIN_PAYMENT:0.01}
+    maximum-payment: ${MAX_PAYMENT:100000.00}
+    default-currency: ${DEFAULT_CURRENCY:USD}
+    max-retry-attempts: ${MAX_RETRIES:3}
+    retry-delay-minutes: ${RETRY_DELAY:5}
+    refund-window-days: ${REFUND_WINDOW:90}
+  
+  # Processing Configuration
+  processing:
+    async-enabled: ${ASYNC_PROCESSING:true}
+    batch-size: ${BATCH_SIZE:50}
+    retry-enabled: ${RETRY_ENABLED:true}
+    webhook-enabled: ${WEBHOOK_ENABLED:true}
+
+# OpenAPI Documentation Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+    filter: true
+  show-actuator: true
+
+---
+# Local Development Profile
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mshando_payments
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    com.mshando.paymentservice: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+payment:
+  providers:
+    stripe:
+      secret-key: sk_test_mock
+      public-key: pk_test_mock
+      webhook-secret: whsec_test_mock
+
+services:
+  user-service:
+    url: http://localhost:8881
+  task-service:
+    url: http://localhost:8882
+  notification-service:
+    url: http://localhost:8885
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: production
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.mshando.paymentservice: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+payment:
+  processing:
+    async-enabled: true
+
+---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/mshando_payments
+    username: postgres
+    password: postgres123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: payment-service
+
+services:
+  user-service:
+    url: http://user-service:8081
+  task-service:
+    url: http://task-service:8082
+  notification-service:
+    url: http://notification-service:8085
+
+logging:
+  level:
+    com.mshando.paymentservice: INFO

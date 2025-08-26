@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: bidding-service
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  
+  h2:
+    console:
+      enabled: true
+
+# Disable Eureka for tests
+eureka:
+  client:
+    enabled: false
+    fetch-registry: false
+    register-with-eureka: false
+
+# Logging configuration for tests
+logging:
+  level:
+    com.mshando.biddingservice: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.test: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Test server configuration
+server:
+  port: 0  # Use random port for tests
+
+# Management endpoints for tests
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# Security configuration for tests
+spring.security:
+  user:
+    name: test
+    password: test123

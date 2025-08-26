@@ -1,0 +1,44 @@
+#!/bin/sh
+# Commit message hook to validate conventional commit format
+
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+
+error_msg="❌ Invalid commit message format!
+
+📝 Please use conventional commit format:
+   feat: add new feature
+   fix: fix a bug  
+   docs: update documentation
+   style: formatting changes
+   refactor: refactor code
+   test: add or update tests
+   chore: maintenance tasks
+   perf: performance improvements
+   ci: CI/CD changes
+   build: build system changes
+   revert: revert changes
+
+Examples:
+   feat(auth): add JWT authentication
+   fix: resolve login redirect issue
+   docs: update API documentation
+   
+💡 Your message should be:
+   - Start with a type (feat, fix, etc.)
+   - Optionally include scope in parentheses
+   - Use present tense
+   - Be concise but descriptive"
+
+# Read the commit message
+input_file=$1
+start_line=$(head -n1 $input_file)
+
+# Check if commit message matches conventional commit format
+if ! echo "$start_line" | grep -qE "$commit_regex"; then
+    echo "$error_msg"
+    echo ""
+    echo "🔍 Your message: '$start_line'"
+    exit 1
+fi
+
+echo "✅ Commit message format is valid!"

@@ -1,0 +1,181 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  
+  # Database Configuration
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/mshando_users}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  # Email Configuration
+  mail:
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    port: ${EMAIL_PORT:587}
+    username: ${EMAIL_USERNAME:}
+    password: ${EMAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${EMAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${EMAIL_SMTP_STARTTLS:true}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:}
+  expiration: ${JWT_EXPIRATION:86400} # 24 hours in seconds
+
+# Application Configuration
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8081}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+# Management and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_SHOW_DETAILS:when_authorized}
+  health:
+    db:
+      enabled: true
+    mail:
+      enabled: false
+
+# Logging Configuration
+logging:
+  level:
+    com.mshando: ${LOG_LEVEL_APP:INFO}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:WARN}
+    org.springframework.web: ${LOG_LEVEL_WEB:WARN}
+    org.hibernate.SQL: ${LOG_LEVEL_SQL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOG_LEVEL_SQL_BINDING:WARN}
+    root: ${LOG_LEVEL_ROOT:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# File Storage Configuration
+file:
+  upload:
+    dir: ${FILE_UPLOAD_DIR:./uploads/user-service}
+    max-size: ${FILE_UPLOAD_MAX_SIZE:10485760} # 10MB
+
+---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://postgres:5432/mshando_users}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres123}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://eureka-server:8761/eureka/}
+
+logging:
+  level:
+    com.mshando: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: ERROR
+    root: INFO
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  
+  h2:
+    console:
+      enabled: true
+
+logging:
+  level:
+    com.mshando: DEBUG
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: production
+  
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    com.mshando: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: ERROR
+    root: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: never

@@ -1,0 +1,230 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+logs/
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+
+# IDE Files
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+## Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+## NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+## Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Spring Boot
+*.pid
+*.pid.lock
+spring-boot-*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment and Configuration Files
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+application-secrets.yml
+application-local.yml
+application-dev.yml
+application-prod.yml
+config/secrets/
+secrets/
+
+# Security and Authentication
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+keystore.*
+truststore.*
+
+# File Uploads and Storage
+uploads/
+storage/
+temp/
+tmp/
+
+# Docker
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+.dockerignore.local
+
+# Testing
+test-results/
+coverage/
+.nyc_output
+junit.xml
+
+# OS Files
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+## Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Node.js (for any frontend components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+package-lock.json
+yarn.lock
+
+# Cache and temporary files
+*.cache
+*.tmp
+*.temp
+*~
+.cache/
+.temp/
+
+# Backup files
+*.backup
+*.bak
+*.swp
+*.swo
+
+# JetBrains IDEs
+*.iml
+.idea/
+
+# STS (Spring Tool Suite)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+# Local development files
+local.properties
+application-local.properties
+application-local.yml
+
+# Sensitive data
+passwords.txt
+secrets.txt
+credentials.*
+auth.*
+tokens.*
+
+# Build tools
+.gradle/
+build/
+target/
+dist/
+out/
+
+# Dependency directories
+lib/
+libs/
+vendor/
+
+# Runtime directories
+bin/
+obj/
+
+# Application specific
+/uploads/
+/logs/
+/data/
+/backups/
+
+# Configuration templates (keep these but not the actual config)
+!*-template.*
+!*-example.*
+!*-sample.*
