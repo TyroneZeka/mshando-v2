@@ -26,7 +26,6 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 @Tag(name = "Authentication", description = "User authentication and registration endpoints")
 public class AuthController {
 

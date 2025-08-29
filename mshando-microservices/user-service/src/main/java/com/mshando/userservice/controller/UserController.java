@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 @Tag(name = "User Management", description = "User profile and account management endpoints")
 public class UserController {
 
