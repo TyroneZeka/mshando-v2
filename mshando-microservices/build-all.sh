@@ -217,7 +217,7 @@ main() {
             echo ""
             echo "Commands:"
             echo "  clean  - Clean previous builds and containers"
-            echo "  check  - Check prerequisites"
+            echo "  check  - Check prerequisites"./
             echo "  build  - Build all services (Maven)"
             echo "  docker - Build Docker images"
             echo "  verify - Verify JAR files exist"

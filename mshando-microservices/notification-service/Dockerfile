@@ -1,5 +1,5 @@
 # Multi-stage build for Notification Service
-FROM maven:3.9.4-openjdk-21-slim AS build
+FROM maven:3.9.4-eclipse-temurin-21-alpine AS build
 
 # Set working directory
 WORKDIR /app
@@ -13,19 +13,19 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Production stage
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:21-jre-alpine
 
 # Set working directory
 WORKDIR /app
 
 # Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 # Copy the JAR file from build stage
 COPY --from=build /app/target/notification-service-*.jar app.jar
 
 # Create non-root user for security
-RUN addgroup --system spring && adduser --system --group spring
+RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 # Expose port

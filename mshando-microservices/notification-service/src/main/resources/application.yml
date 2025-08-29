@@ -13,24 +13,9 @@ spring:
       on-profile: local
   
   datasource:
-    url: jdblogging:logging:
-  level:
-    com.mshando: DEBUG
-    org.springframework.mail: WARN
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ../logs/notification-test.log:
-    com.mshando: DEBUG
-    org.springframework.mail: WARN
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ../logs/notification.logsql://localhost:5432/mshando_notifications
-    username: mshando_user
-    password: mshando_password
+    url: jdbc:postgresql://localhost:5432/mshando_notifications
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres123}
     driver-class-name: org.postgresql.Driver
   
   jpa:
