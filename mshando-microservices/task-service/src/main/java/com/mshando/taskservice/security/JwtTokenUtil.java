@@ -49,7 +49,21 @@ public class JwtTokenUtil {
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
-        return (List<String>) claims.get("roles");
+        
+        // First try to get 'roles' array
+        Object rolesObj = claims.get("roles");
+        if (rolesObj instanceof List) {
+            return (List<String>) rolesObj;
+        }
+        
+        // If 'roles' not found, try single 'role'
+        Object roleObj = claims.get("role");
+        if (roleObj instanceof String) {
+            return List.of((String) roleObj);
+        }
+        
+        // Default to empty list if no roles found
+        return List.of();
     }
 
     /**

@@ -41,7 +41,7 @@ spring:
   # Security Configuration
   security:
     jwt:
-      secret: ${JWT_SECRET:mshando-task-service-secret-key-2023}
+      secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
       expiration: ${JWT_EXPIRATION:86400000}
 
 # Eureka Configuration

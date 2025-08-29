@@ -28,7 +28,7 @@ import java.util.List;
  * REST Controller for Task management
  */
 @RestController
-@RequestMapping("/api/v1/tasks")
+@RequestMapping("/api/tasks")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Task Management", description = "APIs for managing tasks throughout their lifecycle")
