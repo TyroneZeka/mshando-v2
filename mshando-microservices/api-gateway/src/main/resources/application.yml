@@ -12,6 +12,31 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**, /api/auth/**
+        - id: task-service
+          uri: lb://task-service
+          predicates:
+            - Path=/api/tasks/**, /api/categories/**
+        - id: bidding-service
+          uri: lb://bidding-service
+          predicates:
+            - Path=/api/bids/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**, /api/wallet/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+        - id: review-service
+          uri: lb://review-service
+          predicates:
+            - Path=/api/reviews/**, /api/ratings/**
 
 eureka:
   client:
@@ -23,7 +48,7 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: mySecretKey
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
 
 management:
   endpoints:

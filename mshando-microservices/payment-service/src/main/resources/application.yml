@@ -81,8 +81,8 @@ logging:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:mySecretKey}
-  expiration: ${JWT_EXPIRATION:86400000}
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
+  expiration: ${JWT_EXPIRATION:86400}
 
 # Inter-service communication
 services:

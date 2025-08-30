@@ -69,8 +69,8 @@ twilio:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:mySecretKey}
-  expiration: 86400000 # 24 hours
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
+  expiration: 86400 # 24 hours in seconds
 
 # Logging configuration
 logging:
@@ -201,8 +201,8 @@ twilio:
   phone-number: ${TWILIO_PHONE_NUMBER}
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: 86400000
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
+  expiration: 86400
 
 logging:
   level:
@@ -280,8 +280,8 @@ twilio:
   phone-number: ${TWILIO_PHONE_NUMBER}
 
 jwt:
-  secret: ${JWT_SECRET:mySecretKey}
-  expiration: 86400000
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpXVFRva2VuR2VuZXJhdGlvbkFuZFZhbGlkYXRpb24xMjM0NTY3ODkw}
+  expiration: 86400
 
 logging:
   level:

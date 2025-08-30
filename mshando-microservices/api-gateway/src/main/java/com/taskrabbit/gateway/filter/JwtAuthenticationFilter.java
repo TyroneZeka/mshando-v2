@@ -2,6 +2,7 @@ package com.taskrabbit.gateway.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -27,7 +28,7 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAuthenticationFilter.Config> {
 
-    @Value("${jwt.secret:mySecretKey}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
     private final List<String> publicPaths = List.of(
@@ -95,7 +96,7 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
      * Validate JWT token and extract claims
      */
     private Claims validateToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
