@@ -34,6 +34,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         
+        // Skip JWT processing for public endpoints
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+        
+        if (isPublicEndpoint(requestURI, method)) {
+            log.debug("Skipping JWT authentication for public endpoint: {} {}", method, requestURI);
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         try {
             String jwt = getJwtFromRequest(request);
             
@@ -69,6 +79,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         filterChain.doFilter(request, response);
+    }
+    
+    /**
+     * Check if the endpoint is public and should skip JWT processing
+     */
+    private boolean isPublicEndpoint(String requestURI, String method) {
+        // Actuator endpoints
+        if (requestURI.startsWith("/actuator/")) {
+            return "GET".equals(method);
+        }
+        
+        // Swagger endpoints
+        if (requestURI.startsWith("/swagger-ui/") || requestURI.startsWith("/v3/api-docs/")) {
+            return "GET".equals(method);
+        }
+        
+        // Public API endpoints
+        if ("GET".equals(method)) {
+            return requestURI.equals("/api/categories/active") ||
+                   requestURI.equals("/api/categories/search") ||
+                   requestURI.startsWith("/api/tasks/search/") ||
+                   requestURI.matches("/api/tasks/\\d+") ||
+                   requestURI.matches("/api/tasks/\\d+/images") ||
+                   requestURI.matches("/api/tasks/\\d+/images/primary");
+        }
+        
+        return false;
     }
 
     /**
