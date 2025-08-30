@@ -22,10 +22,10 @@ import java.util.function.Function;
 @Slf4j
 public class JwtTokenUtil {
 
-    @Value("${spring.security.jwt.secret}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${spring.security.jwt.expiration}")
+    @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
     /**
@@ -139,7 +139,7 @@ public class JwtTokenUtil {
                 .claim("userId", userId)
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
