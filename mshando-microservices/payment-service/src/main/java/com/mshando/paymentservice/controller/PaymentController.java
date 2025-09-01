@@ -40,7 +40,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping("/api/v1/payments")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "💳 Payment Management", 

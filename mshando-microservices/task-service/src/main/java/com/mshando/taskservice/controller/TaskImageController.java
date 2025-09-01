@@ -24,7 +24,7 @@ import java.util.List;
  * REST Controller for Task Image management
  */
 @RestController
-@RequestMapping("/api/v1/tasks/{taskId}/images")
+@RequestMapping("/api/tasks/{taskId}/images")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Task Image Management", description = "APIs for managing task images and file uploads")
