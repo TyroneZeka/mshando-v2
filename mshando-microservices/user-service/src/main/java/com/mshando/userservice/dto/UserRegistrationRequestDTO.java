@@ -37,7 +37,7 @@ public class UserRegistrationRequestDTO {
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Phone number should be valid")
     private String phoneNumber;
 
-    private String role = "CUSTOMER"; // Default role
+    private String role; // Role will be set by the frontend request
 
     // Default constructor
     public UserRegistrationRequestDTO() {}
