@@ -78,7 +78,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param pageable pagination information
      * @return page of tasks
      */
-    @Query("SELECT t FROM Task t WHERE LOWER(t.location) LIKE LOWER(CONCAT('%', :location, '%')) AND t.status = 'PUBLISHED'")
+    @Query("SELECT t FROM Task t WHERE t.location LIKE CONCAT('%', :location, '%') AND t.status = 'PUBLISHED'")
     Page<Task> findByLocationContaining(@Param("location") String location, Pageable pageable);
     
     /**
@@ -98,13 +98,14 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param pageable pagination information
      * @return page of tasks
      */
-    @Query("SELECT t FROM Task t WHERE " +
+    @Query(value = "SELECT * FROM tasks t WHERE " +
            "t.status = 'PUBLISHED' " +
-           "AND (:categoryId IS NULL OR t.category.id = :categoryId) " +
+           "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +
            "AND (:minBudget IS NULL OR t.budget >= :minBudget) " +
            "AND (:maxBudget IS NULL OR t.budget <= :maxBudget) " +
            "AND (:location IS NULL OR LOWER(t.location) LIKE LOWER(CONCAT('%', :location, '%'))) " +
-           "AND (:isRemote IS NULL OR t.isRemote = :isRemote)")
+           "AND (:isRemote IS NULL OR t.is_remote = :isRemote)",
+           nativeQuery = true)
     Page<Task> findPublishedTasksWithFilters(
             @Param("categoryId") Long categoryId,
             @Param("minBudget") BigDecimal minBudget,

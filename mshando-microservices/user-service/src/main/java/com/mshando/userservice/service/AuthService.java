@@ -42,7 +42,18 @@ public class AuthService {
         user.setLastName(request.getLastName());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.CUSTOMER);
+        
+        // Set role based on request, default to CUSTOMER if not provided
+        Role role = Role.CUSTOMER; // default
+        if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
+            try {
+                role = Role.valueOf(request.getRole().trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid role: " + request.getRole() + ". Valid roles are: CUSTOMER, TASKER, ADMIN");
+            }
+        }
+        user.setRole(role);
+        
         user.setActive(true);
         user.setEmailVerified(false);
         user.setCreatedAt(LocalDateTime.now());

@@ -115,7 +115,7 @@ public class TaskController {
             @Parameter(description = "Maximum budget") @RequestParam(required = false) BigDecimal maxBudget,
             @Parameter(description = "Location filter") @RequestParam(required = false) String location,
             @Parameter(description = "Remote work only") @RequestParam(required = false) Boolean isRemote,
-            @PageableDefault(size = 20, sort = "publishedAt") Pageable pageable) {
+            @PageableDefault(size = 20, sort = "published_at") Pageable pageable) {
         log.debug("Searching published tasks with filters");
 
         Page<TaskResponseDTO> taskPage = taskService.searchPublishedTasks(
