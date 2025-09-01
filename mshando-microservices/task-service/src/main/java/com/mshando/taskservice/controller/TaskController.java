@@ -296,17 +296,15 @@ public class TaskController {
     }
 
     /**
-     * Extract user ID from UserDetails (assuming the username is the user ID)
-     * This will be properly implemented once we integrate with the user service
+     * Extract user ID from JWT authentication token
      */
     private Long extractUserIdFromUserDetails(UserDetails userDetails) {
-        // TODO: Implement proper user ID extraction from JWT token
-        // For now, assuming username contains the user ID
+        // The existing JWT filter sets userId as the username
         try {
             return Long.parseLong(userDetails.getUsername());
         } catch (NumberFormatException e) {
-            log.warn("Unable to extract user ID from username: {}", userDetails.getUsername());
-            return 1L; // Default fallback - will be replaced with proper JWT implementation
+            log.warn("Unable to extract user ID from authentication: {}", userDetails.getUsername());
+            throw new RuntimeException("Invalid user authentication");
         }
     }
 }
