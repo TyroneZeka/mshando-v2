@@ -1,13 +1,15 @@
 package com.mshando.biddingservice.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Web configuration for the Bidding Service.
  * 
- * NOTE: CORS configuration is disabled here as it's handled by the API Gateway.
- * This prevents duplicate CORS headers that would cause browser errors.
+ * Configures CORS, interceptors, and other web-related settings
+ * to ensure proper handling of HTTP requests and cross-origin
+ * resource sharing.
  *
  * @author Mshando Team
  * @version 1.0.0
@@ -16,10 +18,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     /**
-     * CORS configuration disabled - handled by API Gateway
-     * This prevents duplicate Access-Control-Allow-Origin headers
+     * Configure CORS mappings for cross-origin requests
      */
-    /*
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
@@ -35,5 +35,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .maxAge(3600);
     }
-    */
 }

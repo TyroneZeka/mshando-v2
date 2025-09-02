@@ -98,14 +98,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * @param pageable pagination information
      * @return page of tasks
      */
-    @Query(value = "SELECT * FROM tasks t WHERE " +
+    @Query("SELECT t FROM Task t WHERE " +
            "t.status = 'PUBLISHED' " +
-           "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +
+           "AND (:categoryId IS NULL OR t.category.id = :categoryId) " +
            "AND (:minBudget IS NULL OR t.budget >= :minBudget) " +
            "AND (:maxBudget IS NULL OR t.budget <= :maxBudget) " +
-           "AND (:location IS NULL OR LOWER(t.location) LIKE LOWER(CONCAT('%', :location, '%'))) " +
-           "AND (:isRemote IS NULL OR t.is_remote = :isRemote)",
-           nativeQuery = true)
+           "AND (:location IS NULL OR t.location LIKE CONCAT('%', :location, '%')) " +
+           "AND (:isRemote IS NULL OR t.isRemote = :isRemote)")
     Page<Task> findPublishedTasksWithFilters(
             @Param("categoryId") Long categoryId,
             @Param("minBudget") BigDecimal minBudget,

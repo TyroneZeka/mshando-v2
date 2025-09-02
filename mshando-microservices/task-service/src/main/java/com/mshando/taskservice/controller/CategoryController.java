@@ -25,7 +25,7 @@ import java.util.List;
  * REST Controller for Category management
  */
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Category Management", description = "APIs for managing task categories")

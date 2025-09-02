@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
  * @version 1.0.0
  */
 @RestController
-@RequestMapping("/api/bids")
+@RequestMapping("/api/v1/bids")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "🎯 Bid Management", 
@@ -448,18 +448,8 @@ public class BidController {
      * Extract user ID from JWT authentication token
      */
     private Long extractUserIdFromAuthentication(Authentication authentication) {
-        if (authentication == null) {
-            throw new RuntimeException("Authentication is required");
-        }
-        
-        // Extract user ID from JWT authentication details
-        if (authentication.getDetails() instanceof com.mshando.biddingservice.config.JwtAuthenticationFilter.JwtAuthenticationDetails) {
-            com.mshando.biddingservice.config.JwtAuthenticationFilter.JwtAuthenticationDetails details = 
-                (com.mshando.biddingservice.config.JwtAuthenticationFilter.JwtAuthenticationDetails) authentication.getDetails();
-            return details.getUserId();
-        }
-        
-        // Fallback: try to parse from authentication name
+        // This would extract the user ID from the JWT token
+        // Implementation depends on your JWT structure
         try {
             return Long.parseLong(authentication.getName());
         } catch (NumberFormatException e) {
